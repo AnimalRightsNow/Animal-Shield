@@ -1,0 +1,38 @@
+
+pip install coinbase
+
+# or
+
+easy_install coinbase
+
+from coinbase.wallet.client import Client
+
+client = Client(
+    <api_key>,
+    <api_secret>,
+    api_version='YYYY-MM-DD')
+    
+    accounts = client.get_accounts()
+for account in accounts.data:
+  balance = account.balance
+  print "%s: %s %s" % (account.name, balance.amount, balance.currency)
+  print account.get_transactions()
+  
+  account = client.create_account(name="New Wallet")
+balance = account.balance
+print "%s: %s %s" % (account.name, balance.amount, balance.currency)
+
+# Generate a new bitcoin address for your primary account:
+primary_account = client.get_primary_account()
+address = account.create_address() # You created this account in the previous step
+
+# Send coins to the new account from your primary account:
+primary_account.send_money(to=address.address, amount='0.01', currency='BTC', description='For being awesome!')
+
+# View the last transaction
+print primary_account.get_transactions()[-1]
+
+# After some time, the transaction should complete and your balance should update
+primary_account.refresh()
+balance = primary_account.balance
+print "%s: %s %s" % (primary_account.name, balance.amount, balance.currency)
